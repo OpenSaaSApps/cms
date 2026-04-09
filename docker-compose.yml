@@ -1,0 +1,37 @@
+services:
+  app:
+    image: wordpress:latest
+    container_name: cms
+    restart: unless-stopped
+    ports:
+      - "${PORT:-80}:80"
+    environment:
+      - WORDPRESS_DB_HOST=${{WORDPRESS_DB_HOST}}
+      - WORDPRESS_DB_USER=${{WORDPRESS_DB_USER}}
+      - WORDPRESS_DB_PASSWORD=${{WORDPRESS_DB_PASSWORD}}
+      - WORDPRESS_DB_NAME=${{WORDPRESS_DB_NAME}}
+    volumes:
+      - app_data:/data
+    networks:
+      - internal
+
+  db:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${WORDPRESS_DB_PASSWORD}
+      MYSQL_DATABASE: ${WORDPRESS_DB_NAME}
+      MYSQL_USER: ${WORDPRESS_DB_USER}
+      MYSQL_PASSWORD: ${WORDPRESS_DB_PASSWORD}
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - internal
+
+volumes:
+  db_data:
+volumes:
+  app_data:
+
+networks:
+  internal:
